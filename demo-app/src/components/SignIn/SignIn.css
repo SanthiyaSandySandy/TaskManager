@@ -7,7 +7,7 @@
 }
 .sign-up-heading{
     font-size: 50px;
-    color: rgba(240, 0, 0, 0.87);
+    color: rgba(0, 0, 240, 0.87);
     opacity: 0.6;
 }
 
@@ -16,7 +16,7 @@
 }
 
 .btn-signup{
-    background-color: rgba(240, 0, 0, 0.87);
+    background-color: rgba(0, 0, 240, 0.87);
     color: white;
     border: none;
     outline: none;
