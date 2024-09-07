@@ -41,7 +41,7 @@ const Navbar = () => {
         }
         {isLoggedIn && <>
           <li classNameclass="nav-item mx-2">
-          <Link className="nav-link active btn-nav" aria-current="page" href='/signin onClick={logout}>Logout</Link>
+          <Link className="nav-link active btn-nav" aria-current="page" to='/signin onClick={logout}>Logout</Link>
         </li>
         </>
         }
