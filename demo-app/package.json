@@ -21,7 +21,7 @@
     "devDependencies": {
     "@babel/core": "7.12.1",
     "@babel/plugin-proposal-private-property-in-object": "7.12.1",
-    "@babel/preset-env": "7.12.1"
+    "@babel/preset-env": "7.16.0"
   },
   "scripts": {
     "start": "react-scripts start",
