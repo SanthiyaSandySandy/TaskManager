@@ -49,9 +49,9 @@ const SignIn = () => {
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign In</button>
             </div>
           </div>
-          <div className='col-lg-4 column col-left d-flex justify-content-center align-items-center'>
-            <HeadingComp first="Sign" second="In"/>
-          </div>
+          // <div className='col-lg-4 column col-left d-flex justify-content-center align-items-center'>
+          //   <HeadingComp first="Sign" second="In"/>
+          // </div>
         </div>
       </div>
     </div>
