@@ -24,7 +24,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:1000/api/v1/register", inputs).then((response)=>{
+    await axios.post("https://taskmanager-backend-ekmq.onrender.com/api/v1/register", inputs).then((response)=>{
       // console.log(response);
       if (response.data.message === "User already exists"){
         // alert(response.data.message)
