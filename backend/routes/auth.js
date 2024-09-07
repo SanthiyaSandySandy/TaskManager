@@ -60,7 +60,7 @@ router.get("/getTask/:id", async (req, res) => {
     if (list.length != 0) {
         res.status(200).json({ list })
     } else {
-        res.status(400).json({ message: "no list added" })
+        res.status(200).json({ message: "No Tasks Available" })
     }
 })
 
