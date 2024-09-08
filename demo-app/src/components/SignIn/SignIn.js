@@ -6,11 +6,12 @@ import {useNavigate} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store';
 import { ToastContainer, toast } from 'react-toastify';
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin} from '@react-oauth/google'
 
 const SignIn = () => {
   const history = useNavigate()
   const dispatch = useDispatch()
+  const [showGoogleLogin,setShowGoogleLogin]=useState(false)
   const [inputs, setInputs] = useState({email:"", password:""})
 
   const handleChange = (e) => {
@@ -18,18 +19,9 @@ const SignIn = () => {
     setInputs({...inputs, [name]:value})
   }
 
-  const login = useGoogleLogin({
-    onSuccess:(tokenResponse) => {
-      console.log(tokenResponse)
-      toast.success("Signed-Up Success")
-        dispatch(authActions.login())
-        setInputs({
-          email:"",
-          password:""
-        })
-        history("/todo")
-    },
-  })
+  const login = () =>{
+    setShowGoogleLogin(true)
+  }
 
   const handleSubmit =async (e) => {
     e.preventDefault();
@@ -51,6 +43,15 @@ const SignIn = () => {
     })
   }
 
+  const handleLoginSuccess = (credentialResponse) => {
+    console.log("Login success", credentialResponse)
+    dispatch(authActions.login())
+        history("/todo")
+  }
+
+  const handleLoginFailure = ()=> {
+    console.log("Login Failed")
+  }
 
   return (
     <div className='signup'>
@@ -63,7 +64,15 @@ const SignIn = () => {
             <input className="p-2 my-3 input-signup" type='password' name="password" value={inputs.password} placeholder='Password' onChange={handleChange}/>
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign In</button>
             <h6 className='p-2 my-3 input-signup'>Or</h6>
-            <button className='btn-signup p-2' onClick={login()}>Sign-In With Google</button>
+            <button className='btn-signup p-2' onClick={login}>Sign-In With Google</button>
+            {
+              showGoogleLogin && (
+                <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={handleLoginFailure}
+                />
+              )
+            }
             </div>
           </div>
         </div>
