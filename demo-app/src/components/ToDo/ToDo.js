@@ -28,7 +28,7 @@ const ToDo = () => {
         } else {
             const id = sessionStorage.getItem("id");
             if (id) {
-                await axios.post("http://localhost:1000/api/v1/addTask",
+                await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/addTask",
                     {
                         title: input.title,
                         body: input.body,
@@ -55,7 +55,7 @@ const ToDo = () => {
         const id = sessionStorage.getItem("id");
         if (id) {
             await axios
-                .delete(`http://localhost:1000/api/v1/deleteTask/${cardid}`, {
+                .delete(`https://taskmanager-finalbackend.onrender.com/api/v1/deleteTask/${cardid}`, {
                     data: { id: id }
                 })
                 .then(() => {
@@ -84,7 +84,7 @@ const ToDo = () => {
         if (id){
             const fetch = async () => {
                 await axios
-                    .get(`http://localhost:1000/api/v1/getTask/${id}`)
+                    .get(`https://taskmanager-finalbackend.onrender.com/api/v1/getTask/${id}`)
                     .then((response) => {
                         // console.log(response.data.list)
                         setInputsArray(response.data.list)
