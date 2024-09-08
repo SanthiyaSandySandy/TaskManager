@@ -25,7 +25,7 @@ const Update = ({ display, update }) => {
   const handleSubmit = async () => {
     // console.log(inputs)
     await axios
-      .put(`https://taskmanager-finalbackend.onrender.com/api/v1/updateTask/${update._id}`, inputs)
+      .put(`http://localhost:1000/api/v1/updateTask/${update._id}`, inputs)
       .then((response) => {
         toast.success(response.data.message)
         console.log(response)
