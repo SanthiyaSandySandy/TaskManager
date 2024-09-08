@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import './SignIn.css';
 import axios from 'axios';
-import HeadingComp from '../SignUp/HeadingComp';
 import 'react-toastify/dist/ReactToastify.css';
 import {useNavigate} from 'react-router-dom';
-import {useSelector} from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store';
 import { ToastContainer, toast } from 'react-toastify';
@@ -13,7 +11,6 @@ import { useGoogleLogin } from '@react-oauth/google';
 const SignIn = () => {
   const history = useNavigate()
   const dispatch = useDispatch()
-  const isLoggedIn = useSelector((state)=> state.isLoggedIn)
   const [inputs, setInputs] = useState({email:"", password:""})
 
   const handleChange = (e) => {
@@ -21,9 +18,22 @@ const SignIn = () => {
     setInputs({...inputs, [name]:value})
   }
 
+  const login = useGoogleLogin({
+    onSuccess:(tokenResponse) => {
+      console.log(tokenResponse)
+      toast.success("Signed-Up Success")
+        dispatch(authActions.login())
+        setInputs({
+          email:"",
+          password:""
+        })
+        history("/todo")
+    },
+  })
+
   const handleSubmit =async (e) => {
     e.preventDefault();
-    await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/login", inputs).then((response)=>{
+    await axios.post("http://localhost:1000/api/v1/login", inputs).then((response)=>{
       console.log(response);
       if(response.data.message === "User not found, Please Sign-Up First" || response.data.message === "Incorrect password" || response.data.message === "User already exists"){
         toast.error(response.data.message)
@@ -31,20 +41,15 @@ const SignIn = () => {
         toast.success("Sign-In success")
         sessionStorage.setItem("id", response.data.others._id)
         dispatch(authActions.login())
+        setInputs({
+          email:"",
+          password:""
+        })
         console.log(response.data.others._id)
         history("/todo")
       }
     })
   }
-
-    const login = useGoogleLogin({
-    onSuccess:(tokenResponse) => {
-      // console.log(tokenResponse)
-      toast.success("Signed-Up Success")
-      dispatch(authActions.login())
-        history("/todo")
-    },
-  })
 
 
   return (
@@ -57,7 +62,7 @@ const SignIn = () => {
             <input className="p-2 my-3 input-signup" type='email' name="email" value={inputs.email} placeholder='Email' onChange={handleChange}/>
             <input className="p-2 my-3 input-signup" type='password' name="password" value={inputs.password} placeholder='Password' onChange={handleChange}/>
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign In</button>
-                <h6 className='p-2 my-3 input-signup'>Or</h6>
+            <h6 className='p-2 my-3 input-signup'>Or</h6>
             <button className='btn-signup p-2' onClick={login()}>Sign-In With Google</button>
             </div>
           </div>
