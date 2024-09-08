@@ -29,7 +29,7 @@ const ToDo = () => {
             toast.error("Title or Description should not be empty")
         } else {
             if (id) {
-                await axios.post("https://taskmanager-backend-ekmq.onrender.com/api/v1/addTask",
+                await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/addTask",
                     {
                         title: input.title,
                         body: input.body,
@@ -55,7 +55,7 @@ const ToDo = () => {
         // console.log(id)
         if (id) {
             await axios
-                .delete(`https://taskmanager-backend-ekmq.onrender.com/api/v1/deleteTask/${cardid}`, {
+                .delete(`https://taskmanager-finalbackend.onrender.com/api/v1/deleteTask/${cardid}`, {
                     data: { id: id }
                 })
                 .then(() => {
@@ -83,7 +83,7 @@ const ToDo = () => {
         if (id){
             const fetch = async () => {
                 await axios
-                    .get(`https://taskmanager-backend-ekmq.onrender.com/api/v1/getTask/${id}`)
+                    .get(`https://taskmanager-finalbackend.onrender.com/api/v1/getTask/${id}`)
                     .then((response) => {
                         // console.log(response.data.list)
                         setInputsArray(response.data.list)
