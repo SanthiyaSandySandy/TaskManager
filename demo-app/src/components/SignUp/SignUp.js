@@ -5,7 +5,8 @@ import HeadingComp from './HeadingComp';
 import axios from 'axios';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const SignUp = () => {
 
@@ -42,6 +43,14 @@ const SignUp = () => {
       }
     })
   }
+    const login = useGoogleLogin({
+    onSuccess:(tokenResponse) => {
+      // console.log(tokenResponse)
+      toast.success("Signed-Up Success")
+      dispatch(authActions.login())
+        history("/todo")
+    },
+  })
 
   return (
     <div className='signup'>
@@ -55,6 +64,8 @@ const SignUp = () => {
             <input className="p-2 my-3 input-signup" type='password' name='password'placeholder='Password' value={inputs.password} onChange={handleChange}/>
             <input className="p-2 my-3 input-signup" type='password'  name='confirmPassword' placeholder='Confirm Password' value={inputs.confirmPassword} onChange={handleChange}/>
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign Up</button>
+                        <h6 className='p-2 my-3 input-signup'>Or</h6>
+            <button className='btn-signup p-2' onClick={login()}>Sign-Up With Google</button>
             </div>
           </div>
         </div>
