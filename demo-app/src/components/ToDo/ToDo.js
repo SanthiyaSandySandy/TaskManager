@@ -52,6 +52,7 @@ const ToDo = () => {
 
     const del = async (cardid) => {
         console.log(cardid)
+        const id = sessionStorage.getItem("id");
         // console.log(id)
         if (id) {
             await axios
