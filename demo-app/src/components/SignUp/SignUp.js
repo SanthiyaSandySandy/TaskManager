@@ -7,12 +7,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useNavigate} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store';
-import { useGoogleLogin } from '@react-oauth/google';
+import { GoogleLogin} from '@react-oauth/google'
 
 const SignUp = () => {
 
   const history =  useNavigate()
   const dispatch = useDispatch()
+  const [showGoogleLogin,setShowGoogleLogin]=useState(false)
   const [inputs, setInputs] = useState({
     email: "",
     username:"",
@@ -25,14 +26,19 @@ const SignUp = () => {
     setInputs({...inputs, [name]:value})
   }
 
-  const login = useGoogleLogin({
-    onSuccess:(tokenResponse) => {
-      // console.log(tokenResponse)
-      toast.success("Signed-Up Success")
-      dispatch(authActions.login())
+  const login = () =>{
+    setShowGoogleLogin(true)
+  }
+
+  const handleLoginSuccess = (credentialResponse) => {
+    console.log("Login success", credentialResponse)
+    dispatch(authActions.login())
         history("/todo")
-    },
-  })
+  }
+
+  const handleLoginFailure = ()=> {
+    console.log("Login Failed")
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +74,15 @@ const SignUp = () => {
             <input className="p-2 my-3 input-signup" type='password'  name='confirmPassword' placeholder='Confirm Password' value={inputs.confirmPassword} onChange={handleChange}/>
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign Up</button>
             <h6 className='p-2 my-3 input-signup'>Or</h6>
-            <button className='btn-signup p-2' onClick={login()}>Sign-Up With Google</button>
+            <button className='btn-signup p-2' onClick={login}>Sign-Up With Google</button>
+            {
+              showGoogleLogin && (
+                <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={handleLoginFailure}
+                />
+              )
+            }
             </div>
           </div>
         </div>
