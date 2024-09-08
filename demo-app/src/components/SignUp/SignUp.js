@@ -1,121 +1,109 @@
-const router = require("express").Router()
-const User = require('../models/user');
-const bcrypt = require("bcryptjs")
-const List = require('../models/list');
+import React, { useState } from 'react'
+import './SignIn.css';
+import axios from 'axios';
+import 'react-toastify/dist/ReactToastify.css';
+import {useNavigate} from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { authActions } from '../../store';
+import { ToastContainer, toast } from 'react-toastify';
+import { GoogleLogin} from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode'
 
-//add Task
+const SignIn = () => {
+  const history = useNavigate()
+  const dispatch = useDispatch()
+  const [showGoogleLogin,setShowGoogleLogin]=useState(false)
+  const [inputs, setInputs] = useState({email:"", password:""})
 
-router.post('/addTask', async (req, res) => {
-    console.log(req.body)
-    try {
-        const { title, body, id } = req.body;
-        const existingUser = await User.findById(id);
-        if (existingUser) {
-            const list = new List({ title, body, user: existingUser });
-            await list.save().then(() => res.status(200).json({ list }));
-            existingUser.list.push();
-            existingUser.save()
-        }
-    } catch (error) {
-        console.log(error)
-    }
-})
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+    setInputs({...inputs, [name]:value})
+  }
 
-// update Task
+  const login = () =>{
+    setShowGoogleLogin(true)
+  }
 
-router.put('/updateTask/:id', async (req, res) => {
-    console.log(req.body)
-    try {
-        const { title, body } = req.body;
-            const list = await List.findByIdAndUpdate(req.params.id, { title, body });
-            list.save().then(() => res.status(200).json({ message: "Task updated" }))
-    } catch (error) {
-        res.status(200).json({ message: "Unable to Update" })
-    }
-})
+  const handleSubmit =async (e) => {
+    e.preventDefault();
+    await axios.post("http://localhost:1000/api/v1/login", inputs).then((response)=>{
+      console.log(response);
+      if(response.data.message === "User not found, Please Sign-Up First" || response.data.message === "Incorrect password" || response.data.message === "User already exists"){
+        toast.error(response.data.message)
+      } else {
+        sessionStorage.setItem("id", response.data.others._id)
+        dispatch(authActions.login())
+        setInputs({
+          email:"",
+          password:""
+        })
+        console.log(response.data.others._id)
+        history("/todo")
+        toast.success("Sign-In success")
+      }
+    })
+  }
 
-//delete task
-router.delete('/deleteTask/:id', async (req, res) => {
-    console.log(req.body)
-    try {
-        const { id } = req.body;
-        const existingUser = await User.findByIdAndUpdate(
-            id,
-            { $pull: { list: req.params.id } }
-        );
-        console.log(existingUser)
-        if (existingUser) {
-            await List.findByIdAndDelete(req.params.id).then(() => res.status(200).json({ message: "Task Deleted" }));
-        } else {
-            res.status(200).json({ message: "Not found" })  
-        }
-    } catch (error) {
-        console.log(error)
-    }
-})
+  const handleLoginSuccess = async (credentialResponse) => {
+    // console.log("Login success", credentialResponse)
+    const decodeToken = jwtDecode(credentialResponse.credential)
+    // console.log('Decoded Token', decodeToken)
+    await axios
+    .post("http://localhost:1000/api/v1/login", {
+      email: decodeToken.email,
+      password:"undefined"
+    })
+    .then((response)=>{
+      console.log(response);
+      if(response.data.message === "User not found, Please Sign-Up First" || response.data.message === "Incorrect password" || response.data.message === "User already exists"){
+        toast.error(response.data.message)
+      } else {
+        sessionStorage.setItem("id", response.data.others._id)
+        dispatch(authActions.login())
+        setInputs({
+          email:"",
+          password:""
+        })
+        console.log(response.data.others._id)
+        history("/todo")
+        toast.success("Sign-In success")
+      }
+    })
+    // sessionStorage.setItem("id",decodeToken.sub)
+    // dispatch(authActions.login())
+    //     history("/todo")
+  }
 
-//get task by ID
-router.get("/getTask/:id", async (req, res) => {
-    const list = await List.find({ user: req.params.id }).sort({ createdAt: 1 });
-    if (list.length != 0) {
-        res.status(200).json({ list })
-    } else {
-        res.status(200).json({ message: "No Task Available" })
-    }
-})
+  const handleLoginFailure = ()=> {
+    console.log("Login Failed")
+  }
 
-//get task
-router.get("/getTask", async (req, res) => {
-    const list = await List();
-    if (list.length != 0) {
-        res.status(200).json({ list })
-    } else {
-        res.status(400).json({ message: "no list added" })
-    }
-})
+  return (
+    <div className='signup'>
+      <ToastContainer/>
+      <div className='container'>
+        <div className='row'>
+          <div className='col-lg-8 column d-flex justify-content-center align-items-center'>
+            <div className='d-flex flex-column w-100 p-5'>
+            <input className="p-2 my-3 input-signup" type='email' name="email" value={inputs.email} placeholder='Email' onChange={handleChange}/>
+            <input className="p-2 my-3 input-signup" type='password' name="password" value={inputs.password} placeholder='Password' onChange={handleChange}/>
+            <button className='btn-signup p-2' onClick={handleSubmit}>Sign In</button>
+            <h6 className='p-2 my-3 input-signup'>Or</h6>
+            <button className='btn-signup p-2' onClick={login}>Sign-In With Google</button>
+            {
+              showGoogleLogin && (
+                <GoogleLogin
+                onSuccess={handleLoginSuccess}
+                onError={handleLoginFailure}
+                />
+              )
+            }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
 
-
-//Sign Up
-
-router.post('/register', async (req, res) => {
-    console.log(req.body)
-    try {
-        const { email, username, password, confirmPassword } = req.body;
-        if (password == confirmPassword) {
-            const hashpassword = bcrypt.hashSync(password)
-            const user = new User({ email, username, password: hashpassword });
-            await user.save().then(() => res.status(200).json({message:"User Added Successfully"}))
-        } else {
-            res.status(400).json({ message: "Password and Confirm Password dosen't match" })
-        }
-    } catch (error) {
-        console.log(error)
-        res.status(200).json({ message: "User already exists" })
-    }
-})
-
-//Sign-In
-
-router.post("/login", async (req, res) => {
-    console.log(req.body)
-    try {
-        const user = await User.findOne({ email: req.body.email });
-        if (!user) {
-            res.status(200).json({ message: "User not found, Please Sign-Up First" })
-            return  
-        }
-        const passwordCorrect = bcrypt.compareSync(req.body.password, user.password);
-     if (!passwordCorrect) {
-            res.status(200).json({ message: "Incorrect password" })
-        } else {
-            const { password, ...others } = user._doc;
-            res.status(200).json({ others })
-        }
-
-    } catch (error) {
-        console.log(error)
-        res.status(200).json({ message: "User already exists" })
-    }
-})
-
-module.exports = router
+export default SignIn
