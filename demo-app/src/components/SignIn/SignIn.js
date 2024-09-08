@@ -6,7 +6,8 @@ import {useNavigate} from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store';
 import { ToastContainer, toast } from 'react-toastify';
-import { GoogleLogin} from '@react-oauth/google'
+import { GoogleLogin} from '@react-oauth/google';
+import {jwtDecode} from 'jwt-decode'
 
 const SignIn = () => {
   const history = useNavigate()
@@ -30,7 +31,6 @@ const SignIn = () => {
       if(response.data.message === "User not found, Please Sign-Up First" || response.data.message === "Incorrect password" || response.data.message === "User already exists"){
         toast.error(response.data.message)
       } else {
-        toast.success("Sign-In success")
         sessionStorage.setItem("id", response.data.others._id)
         dispatch(authActions.login())
         setInputs({
@@ -39,14 +39,39 @@ const SignIn = () => {
         })
         console.log(response.data.others._id)
         history("/todo")
+        toast.success("Sign-In success")
       }
     })
   }
 
-  const handleLoginSuccess = (credentialResponse) => {
-    console.log("Login success", credentialResponse)
-    dispatch(authActions.login())
+  const handleLoginSuccess = async (credentialResponse) => {
+    // console.log("Login success", credentialResponse)
+    const decodeToken = jwtDecode(credentialResponse.credential)
+    // console.log('Decoded Token', decodeToken)
+    await axios
+    .post("http://localhost:1000/api/v1/login", {
+      email: decodeToken.email,
+      password:"undefined"
+    })
+    .then((response)=>{
+      console.log(response);
+      if(response.data.message === "User not found, Please Sign-Up First" || response.data.message === "Incorrect password" || response.data.message === "User already exists"){
+        toast.error(response.data.message)
+      } else {
+        sessionStorage.setItem("id", response.data.others._id)
+        dispatch(authActions.login())
+        setInputs({
+          email:"",
+          password:""
+        })
+        console.log(response.data.others._id)
         history("/todo")
+        toast.success("Sign-In success")
+      }
+    })
+    // sessionStorage.setItem("id",decodeToken.sub)
+    // dispatch(authActions.login())
+    //     history("/todo")
   }
 
   const handleLoginFailure = ()=> {
