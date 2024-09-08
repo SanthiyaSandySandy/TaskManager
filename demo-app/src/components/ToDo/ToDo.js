@@ -26,6 +26,7 @@ const ToDo = () => {
         if (input.title === "" || input.body === "") {
             toast.error("Title or Description should not be empty")
         } else {
+            const id = sessionStorage.getItem("id");
             if (id) {
                 await axios.post("http://localhost:1000/api/v1/addTask",
                     {
