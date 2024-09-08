@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../../store';
 import { ToastContainer, toast } from 'react-toastify';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const SignIn = () => {
   const history = useNavigate()
@@ -56,6 +57,8 @@ const SignIn = () => {
             <input className="p-2 my-3 input-signup" type='email' name="email" value={inputs.email} placeholder='Email' onChange={handleChange}/>
             <input className="p-2 my-3 input-signup" type='password' name="password" value={inputs.password} placeholder='Password' onChange={handleChange}/>
             <button className='btn-signup p-2' onClick={handleSubmit}>Sign In</button>
+                <h6 className='p-2 my-3 input-signup'>Or</h6>
+            <button className='btn-signup p-2' onClick={login()}>Sign-In With Google</button>
             </div>
           </div>
         </div>
