@@ -36,6 +36,15 @@ const SignIn = () => {
     })
   }
 
+    const login = useGoogleLogin({
+    onSuccess:(tokenResponse) => {
+      // console.log(tokenResponse)
+      toast.success("Signed-Up Success")
+      dispatch(authActions.login())
+        history("/todo")
+    },
+  })
+
 
   return (
     <div className='signup'>
