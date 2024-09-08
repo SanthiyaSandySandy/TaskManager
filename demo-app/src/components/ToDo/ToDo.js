@@ -5,8 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import Update from './Update';
 import axios from 'axios'
-import { useSelector, useDispatch } from 'react-redux'
-import { authActions } from '../../store'
+
 
 let id = sessionStorage.getItem("id")
 let toUpdatedArray = [];
@@ -14,7 +13,6 @@ let toUpdatedArray = [];
 const ToDo = () => {
     const [input, setInput] = useState({ title: "", body: "" })
     const [inputsArray, setInputsArray] = useState([])
-    const isLoggedIn = useSelector((state)=> state.isLoggedIn)
     const show = () => {
         document.getElementById("textarea").style.display = "block";
     }
@@ -29,7 +27,7 @@ const ToDo = () => {
             toast.error("Title or Description should not be empty")
         } else {
             if (id) {
-                await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/addTask",
+                await axios.post("http://localhost:1000/api/v1/addTask",
                     {
                         title: input.title,
                         body: input.body,
@@ -52,11 +50,11 @@ const ToDo = () => {
 
     const del = async (cardid) => {
         console.log(cardid)
-        const id = sessionStorage.getItem("id");
         // console.log(id)
+        const id = sessionStorage.getItem("id");
         if (id) {
             await axios
-                .delete(`https://taskmanager-finalbackend.onrender.com/api/v1/deleteTask/${cardid}`, {
+                .delete(`http://localhost:1000/api/v1/deleteTask/${cardid}`, {
                     data: { id: id }
                 })
                 .then(() => {
@@ -85,7 +83,7 @@ const ToDo = () => {
         if (id){
             const fetch = async () => {
                 await axios
-                    .get(`https://taskmanager-finalbackend.onrender.com/api/v1/getTask/${id}`)
+                    .get(`http://localhost:1000/api/v1/getTask/${id}`)
                     .then((response) => {
                         // console.log(response.data.list)
                         setInputsArray(response.data.list)
@@ -93,7 +91,7 @@ const ToDo = () => {
             }
             fetch()
         }
-    }, [handleSubmit,isLoggedIn])
+    }, [handleSubmit])
 
     return (
         <>
