@@ -34,7 +34,7 @@ const SignUp = () => {
   const handleLoginSuccess = async (credentialResponse) => {
     const decodeToken = jwtDecode(credentialResponse.credential)
     // console.log('Decoded Token', decodeToken.name)
-    await axios.post("http://localhost:1000/api/v1/register",{
+    await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/register",{
       email: decodeToken.email,
       username: decodeToken.name,
       password:"undefined",
@@ -66,7 +66,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:1000/api/v1/register", inputs).then((response)=>{
+    await axios.post("https://taskmanager-finalbackend.onrender.com/api/v1/register", inputs).then((response)=>{
       // console.log(response);
       if (response.data.message === "User already exists"){
         // alert(response.data.message)
